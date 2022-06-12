@@ -9,5 +9,12 @@ package com.ulfg.sem8.project.sudoku;
  * @author user
  */
 public class SudokuGrid {
-    
+    /*
+        We need:
+        + The grid
+        + A way to modify the grid and get its values
+        + Maybe methods to get possible values at specific positions
+        + Method to get empty positions
+        + Methods to validate columns, rows and whole grid
+    */
 }
