@@ -53,7 +53,7 @@ public class ProjectMain {
                         "0, 0, 0, 0, 0, 1, 0, 0, 4";
         
         SudokuGrid sg = new SudokuGrid(9);
-        sg.fromString(hard_half_solved);
+        sg.fromString(easy);
         SudokuSolver solver = new SequentialSudokuSolver(sg);
         solver.solveGrid();
         System.out.println(solver.getGrid().textFormatGrid());
