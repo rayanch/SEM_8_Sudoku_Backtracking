@@ -6,8 +6,10 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public final class SudokuGrid {
+public final class SudokuGrid implements Cloneable{
     /*
         We need:
         + The grid (done)
@@ -40,6 +42,27 @@ public final class SudokuGrid {
         SYMBOLS = new Character[SIZE];
         generateSymbols();
         fromString(gridStr);
+    }
+    
+    // Copy constructor
+    private SudokuGrid(SudokuGrid sGrid)
+    {
+        
+        grid = new ArrayList<>();
+        if(sGrid == null)
+        {            
+            SIZE = 9;
+            BLOC_SIZE = (int) Math.sqrt(SIZE);
+            SYMBOLS = new Character[SIZE];
+            generateSymbols();
+            return;
+        }
+        SIZE = sGrid.SIZE;
+        BLOC_SIZE = sGrid.BLOC_SIZE;
+        SYMBOLS = sGrid.SYMBOLS;
+        if(sGrid.grid != null)
+            for(Character c : sGrid.grid)
+                grid.add(c);
     }
     
     private void generateSymbols()
@@ -182,6 +205,51 @@ public final class SudokuGrid {
                 list.remove(i--);
         
         return new HashSet(list);
+    }
+
+    @Override
+    protected Object clone()
+    {
+        try {
+            super.clone();
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(SudokuGrid.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return new SudokuGrid(this);
+    }
+    
+    public String textFormatGrid()
+    {
+        if(grid == null || grid.isEmpty())
+            return "";
+        
+        StringBuilder strBuilder = new StringBuilder();
+        
+        for(int i = 0; i < SIZE * SIZE; i++)
+        {
+            strBuilder.append(grid.get(i) != '0' ? grid.get(i) : 'X');
+            if(i == 0)
+            {
+                strBuilder.append(" ");
+                continue;
+            }  
+            
+            if((i+1) % SIZE == 0)
+            {
+                strBuilder.append("\n");
+                if((i+1) % (SIZE * BLOC_SIZE) == 0)
+                    strBuilder.append("\n");     
+            }
+            else
+            {
+                if((i+1) % BLOC_SIZE == 0)
+                    strBuilder.append("\t");
+                else
+                    strBuilder.append(" ");
+            }
+        }
+        
+        return strBuilder.toString();
     }
     
     public CellPossibleValues getCellPossibleValues(CellIndex index)
