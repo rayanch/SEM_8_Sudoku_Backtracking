@@ -1,0 +1,264 @@
+package com.ulfg.sem8.project.sudoku;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+public final class SudokuGrid {
+    /*
+        We need:
+        + The grid (done)
+        + A way to modify the grid and get its values (done)
+        + Maybe methods to get possible values at specific positions (done)
+        + Method to get empty positions (done)
+        + Methods to validate columns, rows and whole grid (done)
+        => Test everything...
+    */
+    
+    private final List<Character> grid;
+    public final Character[] SYMBOLS; 
+    private final Integer SIZE;
+    private final Integer BLOC_SIZE;
+            
+    public SudokuGrid(Integer N)
+    {
+        grid = new ArrayList<>();
+        SIZE = N;
+        BLOC_SIZE = (int) Math.sqrt(SIZE);
+        SYMBOLS = new Character[SIZE];
+        generateSymbols();
+    }
+    
+    public SudokuGrid(Integer N, String gridStr)
+    {
+        grid = new ArrayList<>();
+        SIZE = N;
+        BLOC_SIZE = (int) Math.sqrt(SIZE);
+        SYMBOLS = new Character[SIZE];
+        generateSymbols();
+        fromString(gridStr);
+    }
+    
+    private void generateSymbols()
+    {
+        for(int i = 0; i < SIZE; i++)
+            SYMBOLS[i] = (char)((i < 9 ? '1' : ('A' - 9)) + i);
+    }
+    
+    public List<CellIndex> getEmptyCells()
+    {
+        List<CellIndex> list = new ArrayList<>();
+        CellIndex index;
+        
+        for(int i = 0; i < SIZE; i++)
+        {
+            for(int j = 0; j < SIZE; j++)
+            {
+                index = new CellIndex(i, j, SIZE);
+                if(grid.get(index.getCombinedIndex()) == '0')
+                    list.add(index);
+            }
+        }
+        
+        return list;
+    }
+    
+    public SudokuCell getCellValue(CellIndex index)
+    {
+        SudokuCell ret = null;
+        
+        if(grid != null && !grid.isEmpty())
+            ret = new SudokuCell(index, 
+                    grid.get(index.getCombinedIndex()));
+            
+        return ret;
+    }
+    
+    public void setCellValue(CellIndex index, Character value)
+    {
+        if(grid != null && index != null && value != 0)
+            grid.set(index.getCombinedIndex(), value);
+    }
+    
+    public boolean fromString(String grid)
+    {
+        grid = grid.replaceAll("\\s+", "");
+        
+        for(var c : grid.split(","))
+        {
+            if(c.length() != 1 || 
+                    (!c.equals("0") && !isValidSymbol((Character)c.charAt(0))))
+                return false;
+            
+            this.grid.add(c.charAt(0));
+        }
+        
+        return true;
+    }
+    
+    private boolean isValidSymbol(Character sym)
+    {
+        for(int i = 0; i < SIZE; i++)
+            if(SYMBOLS[i].equals(sym))
+                return true;
+        
+        return false;
+    }
+    
+    private boolean isNumberInRow(Integer row, Character value)
+    {
+        for(int i=0; i < SIZE; i++){  
+            if(grid.get(row * SIZE + i).equals(value)){
+                return true;
+            }
+        }
+        return false;
+    }
+ 
+    private boolean isNumberInColumn(Integer column, Character value)
+    {
+        for(int i=0; i < SIZE; i++){  
+            if(grid.get(i * SIZE + column).equals(value)){
+                return true;
+            }
+        }
+        return false;
+
+    }
+ 
+    private boolean isNumberInBlock(CellIndex index, Character value) 
+    {
+        int localBlockRow = index.getRow() - index.getRow() % BLOC_SIZE;
+        int localBlockColumn = index.getColumn() - index.getColumn() % BLOC_SIZE;
+
+        for (int i=localBlockRow;i<localBlockRow+3;i++) {
+            for (int j=localBlockColumn;j<localBlockColumn+3;j++) {
+                if (grid.get(i * SIZE + j).equals(value)) {
+                  return true;
+                }
+            }
+        }
+        return false;
+    }
+  
+    public boolean isValidPlacement(CellIndex index, Character value) 
+    {
+        return !isNumberInRow(index.getRow(), value) &&
+            !isNumberInColumn(index.getColumn(), value) &&
+            !isNumberInBlock(index, value);
+    }
+    
+    private Set getMissingFromRow(Integer row)
+    {
+        List<Character> list = new LinkedList<>(Arrays.asList(SYMBOLS));
+        
+        for(var i = 0; i < list.size(); i++)
+            if(isNumberInRow(row, list.get(i)))
+                list.remove(i--);
+        
+        return new HashSet(list);
+    }
+    
+    private Set getMissingFromColumn(Integer column)
+    {
+        List<Character> list = new LinkedList<>(Arrays.asList(SYMBOLS));
+        
+        for(var i = 0; i < list.size(); i++)
+            if(isNumberInColumn(column, list.get(i)))
+                list.remove(i--);
+        
+        return new HashSet(list);
+    }
+    
+    private Set getMissingFromBlock(CellIndex index)
+    {
+        List<Character> list = new LinkedList<>(Arrays.asList(SYMBOLS));
+        
+        for(var i = 0; i < list.size(); i++)
+            if(isNumberInBlock(index, list.get(i)))
+                list.remove(i--);
+        
+        return new HashSet(list);
+    }
+    
+    public CellPossibleValues getCellPossibleValues(CellIndex index)
+    {
+        CellPossibleValues ret = null;
+        
+        if(grid != null && !grid.isEmpty())
+        {
+            Set result = getMissingFromRow(index.getRow());
+            result.retainAll(getMissingFromColumn(index.getColumn()));
+            result.retainAll(getMissingFromBlock(index));
+
+            ret = new CellPossibleValues(index, new ArrayList<>(result));
+        }
+        return ret;
+        
+    }
+    
+    public static class CellIndex
+    {
+        private final Integer column, row, SIZE;
+
+        public CellIndex(Integer row, Integer column, Integer size) {
+            this.column = column;
+            this.row = row;
+            this.SIZE = size;
+        }
+
+        public Integer getColumn() {
+            return column;
+        }
+
+        public Integer getRow() {
+            return row;
+        }
+        
+        public Integer getCombinedIndex()
+        {
+            return row * SIZE + column;
+        }
+    }
+    
+    public static class SudokuCell
+    {
+        private final CellIndex index;
+        private final Character value;
+
+        public SudokuCell(CellIndex index, Character value) {
+            this.index = index;
+            this.value = value;
+        }
+
+        public CellIndex getIndex() {
+            return index;
+        }
+
+        public Character getValue() {
+            return value;
+        }
+    }
+    
+    public static class CellPossibleValues
+    {
+        private final CellIndex index;
+        private final List<Character> possibleValues;
+
+        public CellPossibleValues(CellIndex index, List<Character> values) {
+            this.index = index;
+            possibleValues = values;
+        }
+
+        public CellIndex getIndex() {
+            return index;
+        }
+
+        public List<Character> getPossibleValue() {
+            return possibleValues;
+        }
+    }
+}
