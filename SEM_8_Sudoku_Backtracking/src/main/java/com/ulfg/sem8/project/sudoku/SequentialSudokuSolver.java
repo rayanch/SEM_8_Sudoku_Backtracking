@@ -1,5 +1,7 @@
 package com.ulfg.sem8.project.sudoku;
 
+import java.util.logging.Logger;
+
 public class SequentialSudokuSolver extends SudokuSolver 
 {
 
@@ -30,20 +32,20 @@ public class SequentialSudokuSolver extends SudokuSolver
         var emptyCell = emptyCells.get(cellIndex);
         var possibleList = grid.getCellPossibleValues(emptyCell);
         
-        System.out.println("Possibilities (Index " + cellIndex.toString() + "): " + possibleList.getPossibleValue());
+        ProjectMain.logger.log("SequentialSudokuSolver.backtrackSolve", 
+                "Possibilities (Index " + cellIndex.toString() + "): " 
+                        + possibleList.getPossibleValue());
         
         for(var possibility : possibleList.getPossibleValue())
         {
             grid.setCellValue(emptyCell, possibility);
             
-            System.out.println(cellIndex);
-            System.out.println(grid.textFormatGrid());
+            ProjectMain.logger.log("", cellIndex.toString());
+            ProjectMain.logger.log("", grid.textFormatGrid());
             
             
             if(backtrackSolve(grid, cellIndex + 1))
-            {
                 return true;
-            }
         }
         
         return false;

@@ -3,7 +3,6 @@ package com.ulfg.sem8.project.util;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.util.logging.Level;
 
 public class Logger 
 {
@@ -31,7 +30,8 @@ public class Logger
     {
         if(!muted)
         {
-            outputStream.println(tag);
+            if(!tag.isEmpty())
+                outputStream.print(tag + ": ");
             outputStream.println(data);
         }
     }
