@@ -1,7 +1,5 @@
 package com.ulfg.sem8.project.sudoku;
 
-import java.util.logging.Logger;
-
 public class SequentialSudokuSolver extends SudokuSolver 
 {
 
