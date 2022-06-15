@@ -110,7 +110,7 @@ public final class SudokuGrid implements Cloneable{
     {
         grid = grid.replaceAll("\\s+", "");
         
-        for(var c : grid.split(","))
+        for(String c : grid.split(","))
         {
             if(c.length() != 1 || 
                     (!c.equals("0") && !isValidSymbol((Character)c.charAt(0))))
@@ -178,7 +178,7 @@ public final class SudokuGrid implements Cloneable{
     {
         List<Character> list = new LinkedList<>(Arrays.asList(SYMBOLS));
         
-        for(var i = 0; i < list.size(); i++)
+        for(int i = 0; i < list.size(); i++)
             if(isNumberInRow(row, list.get(i)))
                 list.remove(i--);
         
@@ -189,7 +189,7 @@ public final class SudokuGrid implements Cloneable{
     {
         List<Character> list = new LinkedList<>(Arrays.asList(SYMBOLS));
         
-        for(var i = 0; i < list.size(); i++)
+        for(int i = 0; i < list.size(); i++)
             if(isNumberInColumn(column, list.get(i)))
                 list.remove(i--);
         
@@ -200,7 +200,7 @@ public final class SudokuGrid implements Cloneable{
     {
         List<Character> list = new LinkedList<>(Arrays.asList(SYMBOLS));
         
-        for(var i = 0; i < list.size(); i++)
+        for(int i = 0; i < list.size(); i++)
             if(isNumberInBlock(index, list.get(i)))
                 list.remove(i--);
         
