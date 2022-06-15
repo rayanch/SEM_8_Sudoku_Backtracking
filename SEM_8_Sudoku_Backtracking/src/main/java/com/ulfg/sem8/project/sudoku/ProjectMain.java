@@ -1,6 +1,5 @@
 package com.ulfg.sem8.project.sudoku;
 
-import com.ulfg.sem8.project.sudoku.UI.MainFrame;
 import com.ulfg.sem8.project.util.Logger;
 
 public class ProjectMain {
@@ -32,16 +31,6 @@ public class ProjectMain {
                         "1, 3, 0, 0, 0, 0, 2, 5, 0," +
                         "0, 0, 0, 0, 0, 0, 0, 7, 4," +
                         "0, 0, 5, 2, 0, 6, 3, 0, 0";
-        
-        String easy =   "8, 7, 6, 9, 0, 0, 0, 0, 0," + 
-                        "0, 1, 0, 0, 0, 6, 0, 0, 0," +
-                        "0, 4, 0, 3, 0, 5, 8, 0, 0," +
-                        "4, 0, 0, 0, 0, 0, 2, 1, 0," +
-                        "0, 9, 0, 5, 0, 0, 0, 0, 0," +
-                        "0, 5, 0, 0, 4, 0, 3, 0, 6," +
-                        "0, 2, 9, 0, 0, 0, 0, 0, 8," +
-                        "0, 0, 4, 6, 9, 0, 1, 7, 3," +
-                        "0, 0, 0, 0, 0, 1, 0, 0, 4";
         
         logger = new Logger();
         logger.mute(); // Comment this to show backtracking steps

@@ -27,14 +27,14 @@ public class SequentialSudokuSolver extends SudokuSolver
         
         grid = (SudokuGrid) grid.clone();
         
-        var emptyCell = emptyCells.get(cellIndex);
-        var possibleList = grid.getCellPossibleValues(emptyCell);
+        SudokuGrid.CellIndex emptyCell = emptyCells.get(cellIndex);
+        SudokuGrid.CellPossibleValues possibleList = grid.getCellPossibleValues(emptyCell);
         
         ProjectMain.logger.log("SequentialSudokuSolver.backtrackSolve", 
                 "Possibilities (Index " + cellIndex.toString() + "): " 
                         + possibleList.getPossibleValue());
         
-        for(var possibility : possibleList.getPossibleValue())
+        for(Character possibility : possibleList.getPossibleValue())
         {
             grid.setCellValue(emptyCell, possibility);
             

@@ -1,8 +1,6 @@
 package com.ulfg.sem8.project.sudoku;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /*
  *  Plan: 
