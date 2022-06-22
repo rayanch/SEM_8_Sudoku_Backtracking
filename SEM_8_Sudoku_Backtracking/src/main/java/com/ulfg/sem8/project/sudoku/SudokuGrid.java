@@ -21,45 +21,47 @@ public final class SudokuGrid implements Cloneable{
     */
     
     private final List<Character> grid;
-    public final Character[] SYMBOLS; 
-    private final Integer SIZE;
-    private final Integer BLOC_SIZE;
+    public static Character[] SYMBOLS = null; 
+    private static Integer SIZE = null;
+    private static Integer BLOC_SIZE = null;
             
     public SudokuGrid(Integer N)
     {
         grid = new ArrayList<>();
-        SIZE = N;
-        BLOC_SIZE = (int) Math.sqrt(SIZE);
-        SYMBOLS = new Character[SIZE];
-        generateSymbols();
+        if(SIZE == null)
+            SIZE = N;
+        if(BLOC_SIZE == null)
+            BLOC_SIZE = (int) Math.sqrt(SIZE);
+        if(SYMBOLS == null)
+        {
+            SYMBOLS = new Character[SIZE];
+            generateSymbols();
+        }
     }
     
     public SudokuGrid(Integer N, String gridStr)
     {
         grid = new ArrayList<>();
-        SIZE = N;
-        BLOC_SIZE = (int) Math.sqrt(SIZE);
-        SYMBOLS = new Character[SIZE];
-        generateSymbols();
+        if(SIZE == null)
+            SIZE = N;
+        if(BLOC_SIZE == null)
+            BLOC_SIZE = (int) Math.sqrt(SIZE);
+        if(SYMBOLS == null)
+        {
+            SYMBOLS = new Character[SIZE];
+            generateSymbols();
+        }
         fromString(gridStr);
     }
     
     // Copy constructor
     private SudokuGrid(SudokuGrid sGrid)
-    {
-        
+    {        
         grid = new ArrayList<>();
+     
         if(sGrid == null)
-        {            
-            SIZE = 9;
-            BLOC_SIZE = (int) Math.sqrt(SIZE);
-            SYMBOLS = new Character[SIZE];
-            generateSymbols();
             return;
-        }
-        SIZE = sGrid.SIZE;
-        BLOC_SIZE = sGrid.BLOC_SIZE;
-        SYMBOLS = sGrid.SYMBOLS;
+        
         if(sGrid.grid != null)
             for(Character c : sGrid.grid)
                 grid.add(c);
@@ -157,8 +159,8 @@ public final class SudokuGrid implements Cloneable{
         int localBlockRow = index.getRow() - index.getRow() % BLOC_SIZE;
         int localBlockColumn = index.getColumn() - index.getColumn() % BLOC_SIZE;
 
-        for (int i=localBlockRow;i<localBlockRow+3;i++) {
-            for (int j=localBlockColumn;j<localBlockColumn+3;j++) {
+        for (int i=localBlockRow;i<localBlockRow+BLOC_SIZE;i++) {
+            for (int j=localBlockColumn;j<localBlockColumn+BLOC_SIZE;j++) {
                 if (grid.get(i * SIZE + j).equals(value)) {
                   return true;
                 }
@@ -218,6 +220,29 @@ public final class SudokuGrid implements Cloneable{
         return new SudokuGrid(this);
     }
     
+    public boolean isGridValid()
+    {
+        CellIndex index;
+        for (int i = 0; i < SIZE; i++)
+        {
+            for(int j = 0; j < SIZE; j++)
+            {
+                index = new CellIndex(i, j, SIZE);
+                Character value = getCellValue(index).value;
+                if(value == '0')
+                    continue;
+                setCellValue(index, '0');
+                if(!isValidPlacement(index, value))
+                {
+                    setCellValue(index, value);
+                    return false;
+                }
+                setCellValue(index, value);
+            }
+        }
+        return true;
+    }
+    
     public String textFormatGrid()
     {
         if(grid == null || grid.isEmpty())
@@ -268,7 +293,7 @@ public final class SudokuGrid implements Cloneable{
         
     }
     
-    public static class CellIndex
+    public class CellIndex
     {
         private final Integer column, row, SIZE;
 
@@ -292,7 +317,7 @@ public final class SudokuGrid implements Cloneable{
         }
     }
     
-    public static class SudokuCell
+    public class SudokuCell
     {
         private final CellIndex index;
         private final Character value;
@@ -311,7 +336,7 @@ public final class SudokuGrid implements Cloneable{
         }
     }
     
-    public static class CellPossibleValues
+    public class CellPossibleValues
     {
         private final CellIndex index;
         private final List<Character> possibleValues;

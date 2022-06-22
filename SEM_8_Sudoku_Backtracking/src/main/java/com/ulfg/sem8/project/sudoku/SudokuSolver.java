@@ -24,7 +24,12 @@ public abstract class SudokuSolver
             emptyCells = null;
     }
     
-    public abstract boolean solveGrid();
+    public boolean solveGrid()
+    {
+        return solveGrid(false);
+    }
+    
+    public abstract boolean solveGrid(boolean checkGrid);
     
     // i: the index in the empty cells list
     // When grid is solved set sudokuGrid to it

@@ -6,10 +6,12 @@ public class SequentialSudokuSolver extends SudokuSolver
     public SequentialSudokuSolver(SudokuGrid grid) {
         super(grid);
     }
-
+    
     @Override
-    public boolean solveGrid() 
+    public boolean solveGrid(boolean check)
     {
+        if(check && !getGrid().isGridValid())
+            return false;
         return backtrackSolve(getGrid(), 0);
     }
 
@@ -39,7 +41,7 @@ public class SequentialSudokuSolver extends SudokuSolver
             grid.setCellValue(emptyCell, possibility);
             
             ProjectMain.logger.log("", cellIndex.toString());
-            ProjectMain.logger.log("", grid.textFormatGrid());
+            //ProjectMain.logger.log("", grid.textFormatGrid());
             
             
             if(backtrackSolve(grid, cellIndex + 1))
