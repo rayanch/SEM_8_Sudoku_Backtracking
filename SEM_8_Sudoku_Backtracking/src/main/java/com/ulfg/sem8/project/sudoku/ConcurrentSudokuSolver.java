@@ -1,30 +1,32 @@
 package com.ulfg.sem8.project.sudoku;
 
-import java.util.List;
 import java.util.concurrent.Semaphore;
 
 public class ConcurrentSudokuSolver extends SudokuSolver 
 {
-    private final Semaphore threadCreationSemaphore;
+    //private final Semaphore threadCreationSemaphore;
     private final Semaphore runSemaphore;
     private final Semaphore retSemaphore;
+    private final Semaphore threadCountSemaphore;
     private final Integer maxThreads;
+    private int threadCount;
     private boolean stillRunning, retVal;
     
     public ConcurrentSudokuSolver(SudokuGrid grid, Integer maxThread) 
     {
         super(grid);
         this.maxThreads = maxThread;
-        if(maxThreads > 0)
+        /*if(maxThreads > 0)
             threadCreationSemaphore = new Semaphore(maxThread);
         else
             threadCreationSemaphore = null;
-        
+        */
         runSemaphore = new Semaphore(1);
         retSemaphore = new Semaphore(1);
+        threadCountSemaphore = new Semaphore(1);
         
         retVal = false;
-        setStillRunning(true);
+        threadCount = 1;
     }
     
     @Override
@@ -32,6 +34,8 @@ public class ConcurrentSudokuSolver extends SudokuSolver
     {
         if(checkGrid && !getGrid().isGridValid())
             return false;
+        
+        setStillRunning(true);
         
         synchronized(retSemaphore)
         {
@@ -46,7 +50,15 @@ public class ConcurrentSudokuSolver extends SudokuSolver
             @Override
             public synchronized void gridBranchDone() 
             {
-                threadCreationSemaphore.release();
+                try {
+                    //threadCreationSemaphore.release();
+                    threadCountSemaphore.acquire();
+                } catch (InterruptedException ex) {
+                    
+                }
+                threadCount = threadCount - 1;
+                //ProjectMain.logger.log("Thread Done", Thread.currentThread().getName());
+                threadCountSemaphore.release();
             }
 
             @Override
@@ -115,7 +127,10 @@ public class ConcurrentSudokuSolver extends SudokuSolver
         public SudokuBranchThread(SudokuGrid grid, 
                 Integer cellIndex, OnGridSolutionBranchDone listener)
         {
-            this.grid = grid;
+            synchronized(grid)
+            {
+                this.grid = (SudokuGrid)grid.clone();
+            }
             this.cellIndex = cellIndex;
             this.onGridSolved = listener;
         }
@@ -123,18 +138,23 @@ public class ConcurrentSudokuSolver extends SudokuSolver
         @Override
         public void run() 
         {
-            if(!isStillRunning() 
+            solveBranch(grid, cellIndex);
+        }
+        
+        private boolean solveBranch(SudokuGrid grid, Integer index)
+        {
+            /*if(!isStillRunning() 
                     || SudokuSolver.emptyCells == null 
                     || cellIndex > SudokuSolver.emptyCells.size())
             {
                 onGridSolved.gridBranchDone();
-                return;
+                return false;
             }
 
             if(cellIndex == SudokuSolver.emptyCells.size())
             {
                 onGridSolved.gridSolved(this.grid);
-                return;
+                return true;
             }
 
             /*
@@ -142,7 +162,7 @@ public class ConcurrentSudokuSolver extends SudokuSolver
               
             */
 
-           
+           /*
             SudokuGrid.CellIndex emptyCell = SudokuSolver.emptyCells.get(cellIndex);
 
             List<Character> possibleList 
@@ -181,7 +201,72 @@ public class ConcurrentSudokuSolver extends SudokuSolver
             }
             
             onGridSolved.gridBranchDone();
+            
+            return false;
+            */
+            
+            if(!isStillRunning() 
+                    || emptyCells == null 
+                    || index > emptyCells.size())
+            {
+                onGridSolved.gridBranchDone();
+                return false;
+            }
+            if(index == emptyCells.size())
+            {            
+                onGridSolved.gridSolved(grid);
+                return true;
+            }
+
+            grid = (SudokuGrid) grid.clone();
+
+            SudokuGrid.CellIndex emptyCell = emptyCells.get(index);
+            SudokuGrid.CellPossibleValues possibleList = grid.getCellPossibleValues(emptyCell);
+
+            for(Character possibility : possibleList.getPossibleValue())
+            {
+                grid.setCellValue(emptyCell, possibility);
+
+                /*ProjectMain.logger.log("ConcurrentSudokuSolver.backtrackSolve (" 
+                    + Thread.currentThread().getName() + ")", 
+                    "Possibilities (Index " + index.toString() + "): " 
+                            + possibleList.getPossibleValue() + 
+                        "\nThreadCount " + threadCount + "\n" + grid.textFormatGrid());*/
+                /*
+                try {
+                    threadCountSemaphore.acquire();
+                } catch (InterruptedException ex) {
+                    
+                }
+                */
+                if(threadCount < maxThreads) // Thread creation possible
+                {
+                    try {
+                        threadCountSemaphore.acquire();
+                    } catch (InterruptedException ex) {
+
+                    }
+                    threadCount = threadCount + 1;
+                    threadCountSemaphore.release();
+                    Thread t = new SudokuBranchThread(grid, 
+                            cellIndex + 1, onGridSolved);
+                    t.start();
+                    ProjectMain.logger.log("Thread Created", t.getName());
+                }
+                else // continue on this thread
+                {
+                    //threadCountSemaphore.release();
+                    if(solveBranch(grid, index + 1))
+                        return true;
+                }
+                
+            }
+            if(index.equals(cellIndex))
+                onGridSolved.gridBranchDone();
+            
+            return false;
         }
+        
     }
 
 }

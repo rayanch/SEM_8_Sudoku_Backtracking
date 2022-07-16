@@ -13,12 +13,12 @@ public class ProjectMain {
         
         initGrids();
         logger = new Logger();
-        //logger.mute(); // Comment this to show backtracking steps
+        logger.mute(); // Comment this to show backtracking steps
         
         SudokuGrid sg = new SudokuGrid(9);
         sg.fromString(grids.get("evil2"));
         //SudokuSolver solver = new SequentialSudokuSolver(sg);
-        SudokuSolver solver = new ConcurrentSudokuSolver(sg, 10);
+        SudokuSolver solver = new ConcurrentSudokuSolver(sg, 1);
         if(solver.solveGrid(false))
             System.out.println(solver.getGrid().textFormatGrid());
         else
