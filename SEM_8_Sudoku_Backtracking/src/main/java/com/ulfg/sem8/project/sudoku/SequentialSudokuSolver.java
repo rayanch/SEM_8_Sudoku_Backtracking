@@ -15,7 +15,8 @@ public class SequentialSudokuSolver extends SudokuSolver
         return backtrackSolve(getGrid(), 0);
     }
 
-    @Override
+    // i: the index in the empty cells list
+    // When grid is solved set sudokuGrid to it
     protected boolean backtrackSolve(SudokuGrid grid, Integer cellIndex) 
     {
         if(emptyCells == null || cellIndex > emptyCells.size())

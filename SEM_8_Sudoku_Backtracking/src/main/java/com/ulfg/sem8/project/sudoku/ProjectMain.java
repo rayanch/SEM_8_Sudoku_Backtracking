@@ -13,11 +13,12 @@ public class ProjectMain {
         
         initGrids();
         logger = new Logger();
-        logger.mute(); // Comment this to show backtracking steps
+        //logger.mute(); // Comment this to show backtracking steps
         
         SudokuGrid sg = new SudokuGrid(9);
-        sg.fromString(grids.get("empty"));
-        SudokuSolver solver = new SequentialSudokuSolver(sg);
+        sg.fromString(grids.get("evil2"));
+        //SudokuSolver solver = new SequentialSudokuSolver(sg);
+        SudokuSolver solver = new ConcurrentSudokuSolver(sg, 10);
         if(solver.solveGrid(false))
             System.out.println(solver.getGrid().textFormatGrid());
         else
@@ -121,5 +122,25 @@ public class ProjectMain {
                             "0, 0, 1, 0, 0, 0, 0, 6, 8," +
                             "0, 0, 8, 5, 0, 0, 0, 1, 0," +
                             "0, 9, 0, 0, 0, 0, 4, 0, 0"); // 1.74s
+        
+        grids.put("evil",   "0, 0, 0, 0, 1, 0, 0, 4, 0," +
+                            "2, 0, 0, 0, 0, 0, 0, 3, 0," +
+                            "0, 6, 0, 0, 0, 9, 1, 0, 2," +
+                            "7, 0, 0, 0, 5, 0, 6, 0, 1," +
+                            "0, 0, 5, 0, 0, 3, 0, 0, 0," +
+                            "0, 0, 0, 0, 0, 0, 4, 0, 0," +
+                            "0, 9, 0, 8, 0, 0, 0, 0, 0," +
+                            "6, 0, 0, 0, 3, 0, 5, 0, 7," +
+                            "0, 0, 0, 0, 0, 0, 0, 2, 0"); // 2.337s
+        
+        grids.put("evil2",  "0, 0, 0, 0, 0, 1, 0, 0, 0," +
+                            "0, 3, 0, 0, 9, 4, 0, 6, 0," +
+                            "0, 0, 5, 0, 0, 0, 3, 0, 0," +
+                            "0, 9, 0, 1, 0, 0, 0, 0, 0," +
+                            "0, 0, 0, 5, 0, 0, 0, 2, 0," +
+                            "0, 0, 7, 0, 2, 9, 0, 0, 4," +
+                            "0, 5, 0, 0, 6, 3, 0, 4, 0," +
+                            "8, 0, 0, 0, 0, 0, 0, 0, 7," +
+                            "0, 0, 0, 2, 0, 0, 0, 0, 0"); // 1.126s
     }
 }

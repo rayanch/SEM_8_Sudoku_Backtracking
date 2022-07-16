@@ -12,7 +12,7 @@ import java.util.List;
 public abstract class SudokuSolver 
 {
     private SudokuGrid sudokuGrid; 
-    protected final List<SudokuGrid.CellIndex> emptyCells;
+    protected static List<SudokuGrid.CellIndex> emptyCells;
     
     protected SudokuSolver(SudokuGrid grid)
     {
@@ -30,10 +30,6 @@ public abstract class SudokuSolver
     }
     
     public abstract boolean solveGrid(boolean checkGrid);
-    
-    // i: the index in the empty cells list
-    // When grid is solved set sudokuGrid to it
-    protected abstract boolean backtrackSolve(SudokuGrid grid, Integer cellIndex); 
     
     protected void setGrid(SudokuGrid grid)
     {
