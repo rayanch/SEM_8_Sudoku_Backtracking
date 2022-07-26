@@ -10,16 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class SudokuGrid implements Cloneable{
-    /*
-        We need:
-        + The grid (done)
-        + A way to modify the grid and get its values (done)
-        + Maybe methods to get possible values at specific positions (done)
-        + Method to get empty positions (done)
-        + Methods to validate columns, rows and whole grid (done)
-        => Test everything...
-    */
-    
+
     private final List<Character> grid;
     public static Character[] SYMBOLS = null; 
     private static Integer SIZE = null;

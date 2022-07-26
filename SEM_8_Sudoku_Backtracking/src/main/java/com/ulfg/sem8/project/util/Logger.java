@@ -30,18 +30,21 @@ public class Logger
     {
         if(!muted)
         {
-            if(!tag.isEmpty())
-                outputStream.print(tag + ": ");
-            outputStream.println(data);
+            synchronized (outputStream)
+            {
+                if(!tag.isEmpty())
+                    outputStream.print(tag + ": ");
+                outputStream.println(data);
+            }
         }
     }
     
-    public void mute()
+    public synchronized void mute()
     {
         muted = true;
     }
     
-    public void unmute()
+    public synchronized void unmute()
     {
         muted = false;
     }

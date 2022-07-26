@@ -28,8 +28,6 @@ public class SequentialSudokuSolver extends SudokuSolver
             return true;
         }
         
-        grid = (SudokuGrid) grid.clone();
-        
         SudokuGrid.CellIndex emptyCell = emptyCells.get(cellIndex);
         SudokuGrid.CellPossibleValues possibleList = grid.getCellPossibleValues(emptyCell);
         
@@ -42,13 +40,13 @@ public class SequentialSudokuSolver extends SudokuSolver
             grid.setCellValue(emptyCell, possibility);
             
             ProjectMain.logger.log("", cellIndex.toString());
-            //ProjectMain.logger.log("", grid.textFormatGrid());
             
             
             if(backtrackSolve(grid, cellIndex + 1))
                 return true;
         }
         
+        grid.setCellValue(emptyCell, '0');
         return false;
     }
 }
