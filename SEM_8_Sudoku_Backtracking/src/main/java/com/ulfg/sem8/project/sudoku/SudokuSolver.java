@@ -2,17 +2,10 @@ package com.ulfg.sem8.project.sudoku;
 
 import java.util.List;
 
-/*
- *  Plan: 
- *      + We have a list of empty cells
- *      + For backtracking, we have start with the 
- *      + 
- */
-
 public abstract class SudokuSolver 
 {
     private SudokuGrid sudokuGrid; 
-    protected final List<SudokuGrid.CellIndex> emptyCells;
+    protected List<SudokuGrid.CellIndex> emptyCells;
     
     protected SudokuSolver(SudokuGrid grid)
     {
@@ -24,11 +17,12 @@ public abstract class SudokuSolver
             emptyCells = null;
     }
     
-    public abstract boolean solveGrid();
+    public boolean solveGrid()
+    {
+        return solveGrid(false);
+    }
     
-    // i: the index in the empty cells list
-    // When grid is solved set sudokuGrid to it
-    protected abstract boolean backtrackSolve(SudokuGrid grid, Integer cellIndex); 
+    public abstract boolean solveGrid(boolean checkGrid);
     
     protected void setGrid(SudokuGrid grid)
     {

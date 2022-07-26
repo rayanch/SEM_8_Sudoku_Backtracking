@@ -6,14 +6,17 @@ public class SequentialSudokuSolver extends SudokuSolver
     public SequentialSudokuSolver(SudokuGrid grid) {
         super(grid);
     }
-
+    
     @Override
-    public boolean solveGrid() 
+    public boolean solveGrid(boolean check)
     {
+        if(check && !getGrid().isGridValid())
+            return false;
         return backtrackSolve(getGrid(), 0);
     }
 
-    @Override
+    // i: the index in the empty cells list
+    // When grid is solved set sudokuGrid to it
     protected boolean backtrackSolve(SudokuGrid grid, Integer cellIndex) 
     {
         if(emptyCells == null || cellIndex > emptyCells.size())
@@ -24,8 +27,6 @@ public class SequentialSudokuSolver extends SudokuSolver
             this.setGrid(grid);
             return true;
         }
-        
-        grid = (SudokuGrid) grid.clone();
         
         SudokuGrid.CellIndex emptyCell = emptyCells.get(cellIndex);
         SudokuGrid.CellPossibleValues possibleList = grid.getCellPossibleValues(emptyCell);
@@ -39,13 +40,13 @@ public class SequentialSudokuSolver extends SudokuSolver
             grid.setCellValue(emptyCell, possibility);
             
             ProjectMain.logger.log("", cellIndex.toString());
-            ProjectMain.logger.log("", grid.textFormatGrid());
             
             
             if(backtrackSolve(grid, cellIndex + 1))
                 return true;
         }
         
+        grid.setCellValue(emptyCell, '0');
         return false;
     }
 }
